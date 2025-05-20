@@ -35,20 +35,23 @@ mvn clean test
 ```
 2. Запуск конкретного тестового класса
 ```zsh
-mvn clean test -Dtest=OrderAuthTest
+mvn clean test -Dtest=CreateOrderTest
 ```
 ```zsh
-mvn clean test -Dtest=OrderNoAuthTest
+mvn clean test -Dtest=GetOrdersTest
 ```
 ```zsh
-mvn clean test -Dtest=UserAuthTest
+mvn clean test -Dtest=CreateUserTest
 ```
 ```zsh
-mvn clean test -Dtest=UserNoAuthTest
+mvn clean test -Dtest=LoginUserTest
+```
+```zsh
+mvn clean test -Dtest=UpdateUserTest
+```
 
-```
 3. Генерация отчетов Allure
-```sh
+```zsh
 mvn allure:serve
 ```
 
