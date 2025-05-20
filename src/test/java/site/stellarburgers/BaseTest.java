@@ -1,5 +1,6 @@
 package site.stellarburgers;
 
+import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -20,12 +21,18 @@ import static org.hamcrest.Matchers.notNullValue;
 public abstract class BaseTest {
     protected UserSteps userSteps;
     protected String userToken;
+    protected String userEmail;
+    protected String userPassword;
+    protected String userName;
+    protected Faker faker;
 
 
     @Before
     public void setUp() {
         RestAssured.baseURI = Data.BURGERS_URL;
+        faker = new Faker();
         userSteps = new UserSteps();
+        generateTestUserData();
         testUser();
     }
 
@@ -42,14 +49,22 @@ public abstract class BaseTest {
         }
     }
 
+    @Step("Генерация данных тестового пользователя")
+    private void generateTestUserData() {
+        userEmail = faker.internet().emailAddress();
+        userPassword = faker.internet().password(8, 12, true, true, true); // более контролируемая генерация пароля
+        userName = faker.name().fullName(); // используем fullName вместо username для более реалистичных данных
+    }
+
 
     @Step("Создать нового пользователя")
     private void testUser() {
-        CreateNewUser user = new CreateNewUser(Data.EMAIL, Data.PASSWORD, Data.NAME);
+
+        CreateNewUser user = new CreateNewUser(userEmail, userPassword, userName);
         Response createResponse = userSteps.createNewUser(user);
         assertThat(createResponse.statusCode(), equalTo(SC_OK));
 
-        UserLogin loginCreds = new UserLogin(Data.EMAIL, Data.PASSWORD);
+        UserLogin loginCreds = new UserLogin(userEmail, userPassword);
         Response loginResponse = userSteps.loginUser(loginCreds);
         assertThat(loginResponse.statusCode(), equalTo(SC_OK));
 

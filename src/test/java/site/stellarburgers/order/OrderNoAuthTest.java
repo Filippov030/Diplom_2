@@ -1,6 +1,6 @@
 package site.stellarburgers.order;
 
-import io.qameta.allure.Step;
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -30,60 +30,41 @@ public class OrderNoAuthTest {
 
     @Test
     @DisplayName("Создание заказа без авторизации пользователем")
+    @Description("Проверка получения кода 200 и номера заказа при создании заказа не авторизованным пользователем")
     public void createNewOrderWhithoutAuthTest() {
-        createNewOrderWhithoutAuth();
-    }
-
-    @Test
-    @DisplayName("Создан заказа без ингридиентов")
-    public void createNewOrderWhithoutIngridientsTest() {
-        createNewOrderWhithoutIngridients();
-    }
-
-    @Test
-    @DisplayName("Получение ошибки 500 при невалидном хеше ингредиента")
-    public void createNewOrderWhithIngridientHashTest() {
-        createNewOrderWhithIngridientHash();
-    }
-
-    @Test
-    @DisplayName("список заказов не получен, Ошибка 401 Пользователь не авторизован")
-    public void getNoAuthUserOrdersTest() {
-        getNoAuthUserOrders();
-    }
-
-
-    @Step("Создать новый заказа")
-    private void createNewOrderWhithoutAuth() {
         String[] ingridients = {Data.INGRIDIENT_BUN, Data.INGRIDIENT_HOT_SAUCE, Data.INGRIDIENT_INVINCIBEL_MEAT, Data.INGRIDIENT_CHEES, Data.INGRIDIENT_BUN};
         Response createResponse = orderSteps.createNewOrder(ingridients, "");
         assertThat(createResponse.statusCode(), equalTo(SC_OK));
         assertThat(createResponse.path("order.number"), notNullValue());
     }
 
-    @Step("Создать заказа без ингридиентов")
-    private void createNewOrderWhithoutIngridients() {
+    @Test
+    @DisplayName("Создан заказа без ингридиентов")
+    @Description("Проверка получения ошибки 400 при попытке создания заказа без ингридиентов")
+    public void createNewOrderWhithoutIngridientsTest() {
         String[] ingridients = {};
         Response createResponse = orderSteps.createNewOrder(ingridients, "");
         assertThat(createResponse.statusCode(), equalTo(SC_BAD_REQUEST));
         assertThat(createResponse.path("message"), equalTo("Ingredient ids must be provided"));
     }
 
-
-    @Step("Создать заказа c невалидным хешем ингредиента")
-    private void createNewOrderWhithIngridientHash() {
+    @Test
+    @DisplayName("Получение ошибки 500 при невалидном хеше ингредиента")
+    @Description("Проверка получения ошибки 500 при попытке создания заказа с невалидном хешем ингредиента")
+    public void createNewOrderWhithIngridientHashTest() {
         String[] ingridients = {Data.NOT_VALID_INGRIDIENT};
         Response createResponse = orderSteps.createNewOrder(ingridients, "");
         assertThat(createResponse.statusCode(), equalTo(SC_INTERNAL_SERVER_ERROR));
     }
 
-    @Step("Получить заказы пользователя")
-    private void getNoAuthUserOrders() {
+    @Test
+    @DisplayName("список заказов не получен, Ошибка 401 Пользователь не авторизован")
+    @Description("Проверка получения ошибки 401 при попытке получения списка заказов неавторизованным пользователем")
+    public void getNoAuthUserOrdersTest() {
         Response createResponse = orderSteps.getUserOrder("");
         assertThat(createResponse.statusCode(), equalTo(SC_UNAUTHORIZED));
         assertThat(createResponse.path("success"), equalTo(false));
         assertThat(createResponse.path("message"), equalTo("You should be authorised"));
-
     }
 
 }

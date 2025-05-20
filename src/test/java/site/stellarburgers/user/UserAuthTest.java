@@ -1,5 +1,6 @@
 package site.stellarburgers.user;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
@@ -18,41 +19,12 @@ import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 
 public class UserAuthTest extends BaseTest {
 
+
     @Test
     @DisplayName("Успешная авторизация пользователя")
+    @Description("Проверка получения кода 200 и accessToken при успешной авторизации клиента")
     public void successfulLoginTest() {
-        successfulLogin();
-    }
-
-
-    @Test
-    @DisplayName("Ошибка 403 при создании дубликата пользователя")
-    public void createDuplicateUserTest() {
-        createUserDouble();
-    }
-
-    @Test
-    @DisplayName("Логин пользователя изменено успешно")
-    public void updateUserMailDataTest() {
-        updateMailData();
-    }
-
-    @Test
-    @DisplayName("Имя пользователя изменено успешно")
-    public void updateUserNameDataTest() {
-        updateNameData();
-    }
-
-    @Test
-    @DisplayName("Пароль пользователя изменен успешно")
-    public void updateUserPassDataTest() {
-        updatePassData();
-    }
-
-
-    @Step("Успешная авторизация статус 200, accessToken присутствует")
-    private void successfulLogin() {
-        UserLogin validCredentials = new UserLogin(Data.EMAIL, Data.PASSWORD);
+        UserLogin validCredentials = new UserLogin(userEmail, userPassword);
         Response response = userSteps.loginUser(validCredentials);
 
         assertThat(response.statusCode(), equalTo(SC_OK));
@@ -60,17 +32,20 @@ public class UserAuthTest extends BaseTest {
     }
 
 
-    @Step("Создать пользователя c существующим Логином и паролем")
-    private void createUserDouble() {
-        CreateNewUser user = new CreateNewUser(Data.EMAIL, Data.PASSWORD, Data.NAME);
+    @Test
+    @DisplayName("Ошибка 403 при создании дубликата пользователя")
+    @Description("Проверка получения ошибка 403 при попытке регистрации пользователя с уже существующими кредами")
+    public void createDuplicateUserTest() {
+        CreateNewUser user = new CreateNewUser(userEmail, userPassword, userName);
         Response createResponse = userSteps.createNewUser(user);
         assertThat(createResponse.statusCode(), equalTo(SC_FORBIDDEN));
         assertThat(createResponse.path("message"), equalTo("User already exists"));
     }
 
-
-    @Step("Изменить емэйл авторизованного пользователя")
-    private void updateMailData() {
+    @Test
+    @DisplayName("Логин пользователя изменено успешно")
+    @Description("Проверка получения кода 200 и Успешного изменения Логина авторизованного пользователя")
+    public void updateUserMailDataTest() {
         UserUpdate updateData = new UserUpdate();
         updateData.setEmail("kocha@ya.ru");
 
@@ -79,9 +54,10 @@ public class UserAuthTest extends BaseTest {
         assertThat(createResponse.path("user.email"), equalTo("kocha@ya.ru"));
     }
 
-
-    @Step("Изменить Имя авторизованного пользователя")
-    private void updateNameData() {
+    @Test
+    @DisplayName("Имя пользователя изменено успешно")
+    @Description("Проверка получения кода 200 и Успешного изменения Имени авторизованного пользователя")
+    public void updateUserNameDataTest() {
         UserUpdate updateData = new UserUpdate();
         updateData.setEmail("kocha@ya.ru");
         updateData.setName("kovkv");
@@ -91,14 +67,14 @@ public class UserAuthTest extends BaseTest {
         assertThat(createResponse.path("user.name"), equalTo("kovkv"));
     }
 
-    @Step("Изменить пароль авторизованного пользователя")
-    private void updatePassData() {
+    @Test
+    @DisplayName("Пароль пользователя изменен успешно")
+    @Description("Проверка получения кода 200 и Успешного изменения паролья авторизованного пользователя")
+    public void updateUserPassDataTest() {
         UserUpdate updateData = new UserUpdate();
         updateData.setEmail("kocha@ya.ru");
         updateData.setPassword("234323");
         Response createResponse = userSteps.updateUser(userToken, updateData);
         assertThat(createResponse.statusCode(), equalTo(SC_OK));
     }
-
-
 }
