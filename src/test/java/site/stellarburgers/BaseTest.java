@@ -25,6 +25,9 @@ public abstract class BaseTest {
     protected String userPassword;
     protected String userName;
     protected Faker faker;
+    protected String newMail;
+    protected String newPass;
+    protected String newName;
 
 
     @Before
@@ -52,10 +55,16 @@ public abstract class BaseTest {
     @Step("Генерация данных тестового пользователя")
     private void generateTestUserData() {
         userEmail = faker.internet().emailAddress();
-        userPassword = faker.internet().password(8, 12, true, true, true); // более контролируемая генерация пароля
-        userName = faker.name().fullName(); // используем fullName вместо username для более реалистичных данных
+        userPassword = faker.internet().password(8, 12, true, true, true);
+        userName = faker.name().fullName();
     }
 
+    @Step("Генерация данных для обновления пользователя")
+    protected void generateUpdateData() {
+        newMail = faker.internet().emailAddress();
+        newPass = faker.internet().password(8, 16, true, true, true);
+        newName = faker.name().fullName();
+    }
 
     @Step("Создать нового пользователя")
     private void testUser() {

@@ -5,26 +5,16 @@ import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.Test;
 import site.stellarburgers.BaseTest;
-import site.stellarburgers.data.Data;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class OrderAuthTest extends BaseTest {
+@DisplayName("Тесты на получение заказа")
+public class GetOrdersTest extends BaseTest {
     OrderSteps orderSteps = new OrderSteps();
-
-
-    @Test
-    @DisplayName("Создание заказа авторизованным пользователем")
-    @Description("Проверка получения кода 200 и номера заказа при создании заказа авторизованным пользователем")
-    public void createNewOrderTest() {
-        String[] ingridients = {Data.INGRIDIENT_BUN, Data.INGRIDIENT_HOT_SAUCE, Data.INGRIDIENT_INVINCIBEL_MEAT, Data.INGRIDIENT_CHEES, Data.INGRIDIENT_BUN};
-        Response createResponse = orderSteps.createNewOrder(ingridients, userToken);
-        assertThat(createResponse.statusCode(), equalTo(SC_OK));
-        assertThat(createResponse.path("order.number"), notNullValue());
-    }
 
 
     @Test
@@ -35,5 +25,16 @@ public class OrderAuthTest extends BaseTest {
         assertThat(createResponse.statusCode(), equalTo(SC_OK));
         assertThat(createResponse.path("success"), equalTo(true));
         assertThat(createResponse.path("orders"), notNullValue());
+    }
+
+
+    @Test
+    @DisplayName("список заказов не получен, Ошибка 401 Пользователь не авторизован")
+    @Description("Проверка получения ошибки 401 при попытке получения списка заказов неавторизованным пользователем")
+    public void getNoAuthUserOrdersTest() {
+        Response createResponse = orderSteps.getUserOrder("");
+        assertThat(createResponse.statusCode(), equalTo(SC_UNAUTHORIZED));
+        assertThat(createResponse.path("success"), equalTo(false));
+        assertThat(createResponse.path("message"), equalTo("You should be authorised"));
     }
 }

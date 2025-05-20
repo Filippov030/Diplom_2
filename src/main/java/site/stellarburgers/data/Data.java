@@ -15,10 +15,6 @@ public class Data {
     public static final String INGRIDIENT_CHEES = "61c0c5a71d1f82001bdaaa7a";
     public static final String NOT_VALID_INGRIDIENT = "110c0c5a71d1f82001bdaaa6d";
 
-//    public static final String EMAIL = "Sila@example.com";
-//    public static final String PASSWORD = "12345";
-//    public static final String NAME = "VChemSila";
-
     public static final String BURGERS_URL = "https://stellarburgers.nomoreparties.site";
     public static final String AUTHORIZATION = "Authorization";
     public static final String CONTENT_TYPE = "Content-type";
